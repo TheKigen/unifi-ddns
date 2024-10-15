@@ -130,17 +130,29 @@ async function handleRequest(request) {
 	        throw new BadRequestException("You must specify both hostname(s) and IP address(es)");
 	}
 
+	for (const ip of ips) {
+		if (ip.startsWith("192.168.") || ip.startsWith("10.") || ip.startsWith("127.")) {
+			return new Response("invalid IPs", {
+				status: 400,
+				headers: {
+					"Content-Type": "text/plain;charset=UTF-8",
+					"Cache-Control": "no-store",
+				},
+			});
+		}
+	}
+
 	// Iterate over each IP and update DNS records for all hostnames
-    	for (const ip of ips) {
+	for (const ip of ips) {
 		await informAPI(hostnames, ip.trim(), username, token);
-    	}
+	}
 	return new Response("good", {
-        	status: 200,
+		status: 200,
 		headers: {
           	  	"Content-Type": "text/plain;charset=UTF-8",
         	    	"Cache-Control": "no-store",
         	},
-    	});
+	});
 }
 
 async function informAPI(hostnames, ip, name, token) {
