@@ -132,13 +132,7 @@ async function handleRequest(request) {
 
 	for (const ip of ips) {
 		if (ip.startsWith("192.168.") || ip.startsWith("10.") || ip.startsWith("127.")) {
-			return new Response("invalid IPs", {
-				status: 400,
-				headers: {
-					"Content-Type": "text/plain;charset=UTF-8",
-					"Cache-Control": "no-store",
-				},
-			});
+			throw new BadRequestException("You cannot specify RFC1918 or loopback address(es)");
 		}
 	}
 
